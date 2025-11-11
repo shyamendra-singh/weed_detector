@@ -22,6 +22,34 @@ async function setupCamera() {
     video.srcObject = stream;
     await new Promise(resolve => (video.onloadedmetadata = resolve));
     video.play();
+
+    // Decide whether to mirror the preview.
+    // If the active video track reports facingMode='user' (front camera), we mirror.
+    // If it's 'environment' (rear camera) we make sure it's not mirrored.
+    try {
+      const tracks = stream.getVideoTracks();
+      if (tracks && tracks.length > 0) {
+        const settings = tracks[0].getSettings ? tracks[0].getSettings() : {};
+        // Determine facing mode. Fallback to checking the label for typical keywords.
+        let facing = settings.facingMode || '';
+        if (!facing && tracks[0].label) {
+          const label = tracks[0].label.toLowerCase();
+          if (/back|rear|environment/.test(label)) facing = 'environment';
+          else if (/front|user|selfie/.test(label)) facing = 'user';
+        }
+
+        if (facing === 'user' || facing === 'front') {
+          video.classList.add('mirrored');
+          canvas.classList.add('mirrored');
+        } else {
+          video.classList.remove('mirrored');
+          canvas.classList.remove('mirrored');
+        }
+      }
+    } catch (e) {
+      // Non-fatal: if we can't inspect the track settings, leave default (no mirror change).
+      console.warn('Could not determine camera facing mode, leaving preview transform as-is.', e);
+    }
   } catch (err) {
     alert("⚠️ Unable to access camera. Please allow camera permissions.");
     console.error("Camera error:", err);

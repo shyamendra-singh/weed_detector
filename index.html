@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Weed Detection WebApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weed Detection WebApp 🌱</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.18.0"></script>
 </head>
 <body>
   <header>
-    <h1>🌱 Weed Detector</h1>
+    <h1>🌱 Weed Detection System</h1>
+    <button id="settingsBtn" title="Settings">⚙️</button>
   </header>
 
   <main class="container">
@@ -17,12 +18,27 @@
       <video id="video" autoplay playsinline></video>
       <canvas id="canvas"></canvas>
     </div>
-    <p id="status">Loading model...</p>
+
+    <button id="startBtn">▶️ Start Detection</button>
+    <p id="status">Waiting to start...</p>
   </main>
 
   <footer>
-    <p>© 2025 Department of Agricultural Engineering, DEI, Agra</p>
+    <p>© 2025 SmartFarm | AI + IoT Weed Detection</p>
   </footer>
+
+  <!-- ⚙️ Settings Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <h2>Device Settings</h2>
+      <p><b>ESP Name:</b> <span id="espName">ESP32_WeedPump</span></p>
+      <p><b>IP Address:</b> <span id="espIp">Not connected</span></p>
+      <p><b>Status:</b> <span id="espStatus">❌ Offline</span></p>
+      <p><b>Pump:</b> <span id="pumpStatus">OFF</span></p>
+      <button id="checkBtn">🔄 Check Connection</button>
+      <button id="closeModal">Close</button>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
