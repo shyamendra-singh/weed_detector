@@ -2,75 +2,53 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const statusEl = document.getElementById('status');
+const startBtn = document.getElementById('startBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+const modal = document.getElementById('settingsModal');
+const closeModal = document.getElementById('closeModal');
+const checkBtn = document.getElementById('checkBtn');
+const espStatusEl = document.getElementById('espStatus');
+const espIpEl = document.getElementById('espIp');
+const pumpStatusEl = document.getElementById('pumpStatus');
 
 let model;
+let detectionRunning = false;
+let pumpOn = false;
 const ESP32_IP = "http://192.168.1.100"; // Replace with your ESP32 IP
+const ESP_NAME = "ESP32_WeedPump";
 
 // Setup camera
 async function setupCamera() {
   const constraints = {
     audio: false,
     video: {
-      facingMode: { ideal: "environment" }, // Use rear camera on mobile
+      facingMode: { ideal: "environment" },
       width: { ideal: 640 },
       height: { ideal: 480 }
     }
   };
 
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    video.srcObject = stream;
-    await new Promise(resolve => (video.onloadedmetadata = resolve));
-    video.play();
-
-    // Decide whether to mirror the preview.
-    // If the active video track reports facingMode='user' (front camera), we mirror.
-    // If it's 'environment' (rear camera) we make sure it's not mirrored.
-    try {
-      const tracks = stream.getVideoTracks();
-      if (tracks && tracks.length > 0) {
-        const settings = tracks[0].getSettings ? tracks[0].getSettings() : {};
-        // Determine facing mode. Fallback to checking the label for typical keywords.
-        let facing = settings.facingMode || '';
-        if (!facing && tracks[0].label) {
-          const label = tracks[0].label.toLowerCase();
-          if (/back|rear|environment/.test(label)) facing = 'environment';
-          else if (/front|user|selfie/.test(label)) facing = 'user';
-        }
-
-        if (facing === 'user' || facing === 'front') {
-          video.classList.add('mirrored');
-          canvas.classList.add('mirrored');
-        } else {
-          video.classList.remove('mirrored');
-          canvas.classList.remove('mirrored');
-        }
-      }
-    } catch (e) {
-      // Non-fatal: if we can't inspect the track settings, leave default (no mirror change).
-      console.warn('Could not determine camera facing mode, leaving preview transform as-is.', e);
-    }
-  } catch (err) {
-    alert("⚠️ Unable to access camera. Please allow camera permissions.");
-    console.error("Camera error:", err);
-  }
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  video.srcObject = stream;
+  await new Promise((resolve) => (video.onloadedmetadata = resolve));
+  video.play();
 }
 
-// Load model
+// Load TensorFlow.js model
 async function loadModel() {
   statusEl.innerText = "Loading weed detection model...";
   model = await tf.loadGraphModel('model/model.json');
-  statusEl.innerText = "✅ Model loaded. Starting detection...";
+  statusEl.innerText = "✅ Model loaded. Press Start Detection.";
 }
 
-// Run detection
+// Main detection loop
 async function detectFrame() {
+  if (!detectionRunning) return;
   tf.engine().startScope();
 
   const input = tf.browser.fromPixels(video).expandDims(0);
   const predictions = await model.executeAsync(input);
 
-  // Update below based on your model output
   const boxes = predictions[0].arraySync();
   const scores = predictions[1].arraySync();
   const classes = predictions[2].arraySync();
@@ -78,10 +56,10 @@ async function detectFrame() {
   drawResults(boxes, scores, classes);
 
   tf.engine().endScope();
-  requestAnimationFrame(detectFrame);
+  if (detectionRunning) requestAnimationFrame(detectFrame);
 }
 
-// Draw bounding boxes
+// Draw results on canvas
 function drawResults(boxes, scores, classes) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   let weedDetected = false;
@@ -121,17 +99,74 @@ let lastState = null;
 async function sendPumpSignal(on) {
   if (on === lastState) return;
   lastState = on;
+  pumpOn = on;
+  updateModalPumpStatus();
+
   try {
     await fetch(`${ESP32_IP}/pump/${on ? 'on' : 'off'}`);
-    console.log(`Pump ${on ? 'ON' : 'OFF'}`);
   } catch (e) {
     console.warn("ESP32 not reachable:", e);
   }
 }
 
-// Init
-(async function init() {
-  await setupCamera();
-  await loadModel();
-  detectFrame();
-})();
+// ESP connection check
+async function checkESPConnection() {
+  espIpEl.innerText = ESP32_IP;
+  espStatusEl.innerText = "⏳ Checking...";
+  try {
+    const res = await fetch(`${ESP32_IP}`);
+    if (res.ok) {
+      espStatusEl.innerText = "✅ Online";
+      espStatusEl.style.color = "green";
+    } else {
+      espStatusEl.innerText = "❌ Offline";
+      espStatusEl.style.color = "red";
+    }
+  } catch (e) {
+    espStatusEl.innerText = "❌ Offline";
+    espStatusEl.style.color = "red";
+  }
+  updateModalPumpStatus();
+}
+
+// Modal functions
+function openModal() {
+  modal.style.display = 'block';
+  document.getElementById('espName').innerText = ESP_NAME;
+  checkESPConnection();
+}
+
+function closeModalWindow() {
+  modal.style.display = 'none';
+}
+
+function updateModalPumpStatus() {
+  pumpStatusEl.innerText = pumpOn ? "ON" : "OFF";
+  pumpStatusEl.style.color = pumpOn ? "red" : "black";
+}
+
+// Event listeners
+settingsBtn.addEventListener('click', openModal);
+closeModal.addEventListener('click', closeModalWindow);
+checkBtn.addEventListener('click', checkESPConnection);
+
+startBtn.addEventListener('click', async () => {
+  if (detectionRunning) {
+    detectionRunning = false;
+    startBtn.innerText = "▶️ Start Detection";
+    statusEl.innerText = "⏸ Detection stopped.";
+    sendPumpSignal(false);
+  } else {
+    detectionRunning = true;
+    startBtn.innerText = "⏹ Stop Detection";
+    statusEl.innerText = "Starting camera...";
+    await setupCamera();
+    await loadModel();
+    detectFrame();
+  }
+});
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  if (event.target == modal) modal.style.display = "none";
+};
