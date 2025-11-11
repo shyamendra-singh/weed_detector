@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Weed Detection WebApp 🌱</title>
+  <title>VARDAN | Weed Detector</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.18.0"></script>
 </head>
 <body>
   <header>
-    <h1>🌱 Weed Detector</h1>
+    <div class="logo-area">
+      <img src="logo1.png" alt="VARDAN Logo" class="logo" />
+      <h1 class="app-title">Weed Detector</h1>
+    </div>
     <button id="settingsBtn" title="Settings">⚙️</button>
   </header>
 
@@ -17,6 +20,10 @@
     <div class="video-container">
       <video id="video" autoplay playsinline></video>
       <canvas id="canvas"></canvas>
+      <div id="idleOverlay">
+        <img src="logo.png" alt="VARDAN Logo" />
+        <p>Press <strong>Start Detection</strong> to begin</p>
+      </div>
     </div>
 
     <button id="startBtn">▶️ Start Detection</button>
@@ -24,7 +31,7 @@
   </main>
 
   <footer>
-    <p>© 2025 Department of Agricultural Engineering</p>
+    <p>© 2025 VARDAN | Versatile Autonomous Robotic Device for Agricultural Nourishment</p>
   </footer>
 
   <!-- ⚙️ Settings Modal -->

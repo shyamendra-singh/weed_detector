@@ -16,32 +16,70 @@ body {
 }
 
 header {
-  background: #4caf50;
-  color: white;
+  background: #1b3d2f; /* deep earthy green */
+  color: rgb(255, 255, 255);
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 12px 0;
-  font-size: 1.2rem;
+  padding: 10px 0;
 }
 
-/* ⚙️ Settings button */
+.logo {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 #settingsBtn {
   position: absolute;
   right: 16px;
   top: 8px;
   background: transparent;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   cursor: pointer;
   color: white;
   transition: transform 0.2s;
 }
-
 #settingsBtn:hover {
   transform: rotate(20deg);
+}
+
+/* --- Idle overlay --- */
+#idleOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.92);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+#idleOverlay img {
+  width: 60%;
+  max-width: 250px;
+  margin-bottom: 15px;
+  opacity: 0.9;
+}
+
+#idleOverlay p {
+  color: #2e7d32;
+  font-size: 1.1rem;
 }
 
 .container {
