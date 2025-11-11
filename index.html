@@ -2,18 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Weed Detection WebApp</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.18.0"></script>
 </head>
 <body>
-  <h1>🌱 Weed Detector</h1>
-  <div class="container">
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
-  </div>
-  <p id="status">Loading model...</p>
+  <header>
+    <h1>🌱 Weed Detector</h1>
+  </header>
+
+  <main class="container">
+    <div class="video-container">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+    </div>
+    <p id="status">Loading model...</p>
+  </main>
+
+  <footer>
+    <p>© 2025 Department of Agricultural Engineering, DEI, Agra</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
