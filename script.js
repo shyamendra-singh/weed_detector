@@ -155,13 +155,13 @@ const idleOverlay = document.getElementById('idleOverlay');
 startBtn.addEventListener('click', async () => {
   if (detectionRunning) {
     detectionRunning = false;
-    startBtn.innerText = "▶️ Start Detection";
-    statusEl.innerText = "⏸ Detection stopped.";
+    startBtn.innerText = "Start Detection";
+    statusEl.innerText = "Detection stopped.";
     sendPumpSignal(false);
     idleOverlay.style.display = 'flex'; // show overlay with logo
   } else {
     detectionRunning = true;
-    startBtn.innerText = "⏹ Stop Detection";
+    startBtn.innerText = "Stop Detection";
     statusEl.innerText = "Starting camera...";
     idleOverlay.style.display = 'none'; // hide overlay
     await setupCamera();
