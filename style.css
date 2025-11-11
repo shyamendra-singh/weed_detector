@@ -78,7 +78,7 @@ header {
 }
 
 #idleOverlay p {
-  color: #2e7d32;
+  color: #1b3d2f;
   font-size: 1.1rem;
 }
 
@@ -140,7 +140,7 @@ video, canvas {
   margin-top: 16px;
   font-size: 1.1rem;
   text-align: center;
-  color: #2e7d32;
+  color: #1b3d2f;
 }
 
 footer {
@@ -185,7 +185,7 @@ footer {
   width: 100%;
   margin-top: 10px;
   padding: 10px;
-  background: #4caf50;
+  background: #1b3d2f;
   color: white;
   border: none;
   border-radius: 10px;
@@ -194,5 +194,5 @@ footer {
 }
 
 .modal-content button:hover {
-  background: #43a047;
+  background: #1b3d2f;
 }
