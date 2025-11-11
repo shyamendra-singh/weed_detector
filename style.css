@@ -1,9 +1,10 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
   font-family: 'Poppins', sans-serif;
   background: #f5fff4;
   color: #333;
@@ -11,6 +12,7 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 header {
@@ -28,32 +30,37 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
   padding: 10px;
 }
 
+/* 🔹 Make video container tall and portrait-like */
 .video-container {
   position: relative;
   width: 90%;
-  max-width: 640px;
-  aspect-ratio: 4 / 3;
-  border-radius: 16px;
+  max-width: 420px;        /* ideal for mobile portrait */
+  aspect-ratio: 3 / 4;     /* portrait shape */
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: #000;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
-video,
-canvas {
+/* 🔹 Stretch video & canvas to fill container */
+video, canvas {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;       /* fills area */
+  transform: scaleX(-1);   /* mirror for selfie-style view (optional) */
 }
 
 #status {
-  margin-top: 12px;
-  font-size: 1.1rem;
+  margin-top: 16px;
+  font-size: 1.2rem;
+  text-align: center;
   color: #2e7d32;
 }
 
@@ -66,16 +73,18 @@ footer {
   color: #555;
 }
 
-@media (max-width: 768px) {
-  h1 {
-    font-size: 1.2rem;
-  }
-
-  #status {
-    font-size: 1rem;
-  }
-
+/* 🔹 On tablets and desktops, make it bigger but still portrait */
+@media (min-width: 768px) {
   .video-container {
-    width: 95%;
+    max-width: 600px;
+    aspect-ratio: 3 / 4;
+  }
+}
+
+/* 🔹 On very large screens (optional landscape view) */
+@media (min-width: 1200px) {
+  .video-container {
+    max-width: 720px;
+    aspect-ratio: 4 / 3;
   }
 }
