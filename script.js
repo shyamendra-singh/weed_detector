@@ -12,8 +12,8 @@ async function setupCamera() {
     audio: false,
     video: {
       facingMode: { ideal: "environment" }, // Use rear camera on mobile
-      width: { ideal: 640 },
-      height: { ideal: 480 }
+      width: { ideal: 1920 },
+      height: { ideal: 1080 }
     }
   };
 
