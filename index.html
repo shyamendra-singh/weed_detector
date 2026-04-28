@@ -5,52 +5,255 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VARDAN | Weed Detector</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.18.0"></script>
 </head>
 <body>
-  <header>
-    <div class="logo-area">
-      <img src="logo1.png" alt="VARDAN Logo" class="logo" />
-      <h1 class="app-title">Weed Detector</h1>
-    </div>
-    <button id="settingsBtn" title="Settings">⚙️</button>
-  </header>
-
-  <main class="container">
-    <div class="video-container">
-      <video id="video" autoplay playsinline></video>
-      <canvas id="canvas"></canvas>
-      <div id="idleOverlay">
-        <img src="logo.png" alt="VARDAN Logo" />
-        <p>Press <strong>Start Detection</strong> to begin</p>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="logo1.png" alt="VARDAN" class="brand-logo" />
+        <div>
+          <div class="brand-wordmark">VARDAN</div>
+          <h1>Weed Detector</h1>
+        </div>
       </div>
-    </div>
+      <button id="settingsBtn" class="icon-btn" aria-label="Open settings">
+        <span>&#9881;</span>
+      </button>
+    </header>
 
-    <button id="startBtn">Start Detection</button>
-    <p id="status">Waiting to start...</p>
-  </main>
+    <main class="app-content">
+      <section id="screenSplash" class="screen active">
+        <div class="splash-stage">
+          <div class="hero-card">
+            <img src="logo.png" alt="VARDAN" class="hero-logo" />
+            <p class="hero-tagline">Versatile Autonomous Robotic Device for Agricultural Nourishment</p>
 
-  <footer>
-    <p>© 2025 VARDAN | Versatile Autonomous Robotic Device for Agricultural Nourishment</p>
-  </footer>
+            <div class="loader-block">
+              <div class="spinner"></div>
+              <p class="loader-title">Loading AI Model (TensorFlow.js)</p>
+              <div class="progress-track">
+                <div id="progressBar" class="progress-fill"></div>
+              </div>
+              <div class="progress-meta">
+                <span>Model: YOLOv5n (Weed Detection)</span>
+                <strong id="progressValue">0%</strong>
+              </div>
+              <p id="splashHint" class="loader-hint">Calibrating field vision pipeline...</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-  <!-- ⚙️ Settings Modal -->
+      <section id="screenHome" class="screen">
+        <div class="status-row">
+          <div class="connection">
+            <span class="status-dot live"></span>
+            <div>
+              <strong>ESP32: Connected</strong>
+              <span id="ipLabel">192.168.4.1</span>
+            </div>
+          </div>
+          <div id="pumpPill" class="pump-pill">
+            <span class="drop">DROP</span>
+            <strong>PUMP: OFF</strong>
+          </div>
+        </div>
+
+        <section class="feed-card">
+          <div class="feed-topline">
+            <span id="fpsBadge" class="feed-chip">FPS: 18.6</span>
+            <span class="record-dot"></span>
+          </div>
+
+          <div id="cameraFrame" class="camera-frame">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="analysisCanvas" width="960" height="720" aria-hidden="true"></canvas>
+            <div id="fallbackScene" class="fallback-scene"></div>
+            <div id="boxesLayer" class="boxes-layer"></div>
+            <div id="feedOverlay" class="feed-overlay">
+              <img src="logo1.png" alt="VARDAN" />
+              <p>Starting field camera and weed model...</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="stats-card">
+          <div class="mini-stat">
+            <span class="mini-icon">WD</span>
+            <div>
+              <span>Weeds Detected</span>
+              <strong id="weedCount">0</strong>
+            </div>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-icon">PM</span>
+            <div>
+              <span>Pumps Triggered</span>
+              <strong id="pumpCount">0</strong>
+            </div>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-icon">UP</span>
+            <div>
+              <span>Uptime</span>
+              <strong id="uptimeValue">00:00:00</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="action-row">
+          <button id="toggleDetectionBtn" class="action-btn primary">
+            <span>||</span>
+            <span>Pause Detection</span>
+          </button>
+          <button id="stopSessionBtn" class="action-btn danger">
+            <span>STOP</span>
+            <span>Stop</span>
+          </button>
+        </section>
+      </section>
+
+      <section id="screenHistory" class="screen">
+        <div class="panel-card info-card">
+          <h2>Recent Activity</h2>
+          <p>Simulated field events are recorded here to make the workflow feel like a real deployed device.</p>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+
+      <section id="screenReport" class="screen">
+        <div class="panel-card success-card">
+          <div class="success-icon">&#10003;</div>
+          <div>
+            <h2>Session Completed</h2>
+            <p>Great job! Here is your session summary.</p>
+            <span id="reportTimestamp" class="timestamp"></span>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h3>Session Summary</h3>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span>Total Weeds Detected</span>
+              <strong id="reportWeeds">0</strong>
+            </div>
+            <div class="summary-item">
+              <span>Pumps Triggered</span>
+              <strong id="reportPumps">0</strong>
+            </div>
+            <div class="summary-item">
+              <span>Total Run Time</span>
+              <strong id="reportRuntime">00:00:00</strong>
+            </div>
+            <div class="summary-item">
+              <span>Area Covered (est.)</span>
+              <strong id="reportArea">0.00 ha</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card confidence-card">
+          <h3>Detection Confidence (Average)</h3>
+          <div class="confidence-layout">
+            <div class="ring-wrap">
+              <div id="confidenceRing" class="confidence-ring">
+                <div class="ring-inner">
+                  <strong id="avgConfidence">0.00</strong>
+                  <span id="confidenceLabel">Medium</span>
+                </div>
+              </div>
+            </div>
+            <div class="confidence-legend">
+              <div><span class="legend-dot high"></span>High (&gt;= 0.75) <strong id="highPct">0%</strong></div>
+              <div><span class="legend-dot med"></span>Medium (0.50 - 0.75) <strong id="midPct">0%</strong></div>
+              <div><span class="legend-dot low"></span>Low (&lt; 0.50) <strong id="lowPct">0%</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h3>Weed Detections Over Time</h3>
+          <svg id="reportChart" class="chart" viewBox="0 0 360 150" preserveAspectRatio="none" aria-label="Detection chart"></svg>
+        </div>
+
+        <div class="report-actions">
+          <button id="downloadReportBtn" class="secondary-btn">Download Report</button>
+          <button id="newSessionBtn" class="primary-btn">New Session</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-screen="screenHome">
+        <span>HM</span>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-screen="screenHistory">
+        <span>HS</span>
+        <span>History</span>
+      </button>
+      <button class="nav-item" data-screen="screenReport">
+        <span>RP</span>
+        <span>Report</span>
+      </button>
+      <button class="nav-item" data-screen="settings">
+        <span>ST</span>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 VARDAN | Versatile Autonomous Robotic Device for Agricultural Nourishment</p>
+    </footer>
+  </div>
+
   <div id="settingsModal" class="modal">
-    <div class="modal-content">
-      <h2>Device Settings</h2>
-      <p><b>ESP Name:</b> <span id="espName">ESP32_WeedPump</span></p>
-      <p><b>IP Address:</b> <span id="espIp">Not connected</span></p>
-      <p><b>Status:</b> <span id="espStatus">❌ Offline</span></p>
-      <p><b>Pump:</b> <span id="pumpStatus">OFF</span></p>
-      <button id="checkBtn">🔄 Check Connection</button>
-      <button id="closeModal">Close</button>
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h2>Settings</h2>
+        <button id="closeModal" class="close-btn" aria-label="Close settings">&times;</button>
+      </div>
+
+      <div class="setting-group">
+        <h3>Connection Settings</h3>
+        <label for="ipInput">ESP32 IP Address</label>
+        <input id="ipInput" type="text" value="192.168.4.1" />
+        <p class="field-hint">Enter the IP address of the ESP32 device</p>
+
+        <div class="status-block">
+          <span>Connection Status</span>
+          <strong id="connectionStatus" class="connected">Connected</strong>
+          <small id="pingValue">Last ping: 32 ms</small>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h3>Model Settings</h3>
+        <label for="modelSelect">Model</label>
+        <select id="modelSelect">
+          <option>YOLOv5n (Weed Detection)</option>
+          <option>YOLOv8 Nano (Fast Scan)</option>
+          <option>MobileNet Crop Filter</option>
+        </select>
+
+        <label for="confidenceSlider">Confidence Threshold</label>
+        <div class="slider-row">
+          <input id="confidenceValue" class="value-box" type="text" value="0.50" readonly />
+          <input id="confidenceSlider" type="range" min="0.3" max="0.95" step="0.01" value="0.50" />
+        </div>
+
+        <label for="maxDetections">Max Detections</label>
+        <input id="maxDetections" type="number" min="1" max="10" value="10" />
+      </div>
+
+      <div class="modal-actions">
+        <button id="cancelSettingsBtn" class="secondary-btn">Cancel</button>
+        <button id="saveSettingsBtn" class="primary-btn">Save</button>
+      </div>
     </div>
   </div>
 
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
