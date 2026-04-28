@@ -639,6 +639,17 @@ select {
   cursor: pointer;
 }
 
+.nav-icon {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
 .nav-item.active {
   color: var(--green-900);
   font-weight: 700;
