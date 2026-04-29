@@ -343,27 +343,83 @@ select {
 
 .boxes-layer {
   pointer-events: none;
+  z-index: 3;
 }
 
 .detection-box {
   position: absolute;
-  border: 3px solid #46f037;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.24);
+  border: 3px solid #4cff54;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 1px rgba(3, 28, 10, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    0 0 18px rgba(76, 255, 84, 0.38);
+  background: rgba(76, 255, 84, 0.08);
 }
 
 .detection-label {
   position: absolute;
-  top: -2px;
+  top: -8px;
   left: -2px;
   transform: translateY(-100%);
-  background: #38c128;
+  background: linear-gradient(180deg, #49ce3b 0%, #1e8e27 100%);
   color: #fff;
   font-weight: 700;
-  font-size: 0.92rem;
-  padding: 3px 7px;
-  border-radius: 6px 6px 6px 0;
-  text-transform: lowercase;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px 8px 8px 0;
   white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+}
+
+.detection-corners,
+.detection-corners::before,
+.detection-corners::after,
+.detection-center {
+  position: absolute;
+}
+
+.detection-corners {
+  inset: 0;
+  border-radius: inherit;
+}
+
+.detection-corners::before,
+.detection-corners::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-color: #d7ffd4;
+  border-style: solid;
+  filter: drop-shadow(0 0 6px rgba(34, 112, 40, 0.45));
+}
+
+.detection-corners::before {
+  top: -3px;
+  left: -3px;
+  border-width: 3px 0 0 3px;
+  border-top-left-radius: 10px;
+}
+
+.detection-corners::after {
+  right: -3px;
+  bottom: -3px;
+  border-width: 0 3px 3px 0;
+  border-bottom-right-radius: 10px;
+}
+
+.detection-center {
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #dfffd9;
+  border: 2px solid #1d7228;
+  box-shadow: 0 0 0 4px rgba(76, 255, 84, 0.22);
 }
 
 .feed-overlay {
@@ -376,6 +432,7 @@ select {
   background: rgba(14, 28, 17, 0.56);
   color: #fff;
   padding: 20px;
+  z-index: 4;
 }
 
 .feed-overlay.hidden {

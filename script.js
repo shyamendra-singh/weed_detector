@@ -271,13 +271,24 @@ function renderChart() {
 }
 
 function renderDetections(detections) {
+  state.detections = detections;
   boxesLayer.innerHTML = detections
     .map(
-      (detection) => `
-        <div class="detection-box" style="left:${detection.x}%;top:${detection.y}%;width:${detection.w}%;height:${detection.h}%;">
-          <div class="detection-label">weed ${detection.confidence.toFixed(2)}</div>
+      (detection, index) => {
+        const left = Math.max(0, Math.min(100, detection.x));
+        const top = Math.max(0, Math.min(100, detection.y));
+        const width = Math.max(4, Math.min(100 - left, detection.w));
+        const height = Math.max(4, Math.min(100 - top, detection.h));
+        const confidence = detection.confidence.toFixed(2);
+
+        return `
+        <div class="detection-box" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;">
+          <div class="detection-label">weed ${index + 1} | ${confidence}</div>
+          <div class="detection-corners" aria-hidden="true"></div>
+          <div class="detection-center" aria-hidden="true"></div>
         </div>
-      `
+      `;
+      }
     )
     .join("");
 }
@@ -461,6 +472,7 @@ function finishSession() {
   state.running = false;
   state.paused = true;
   state.sessionEndedAt = new Date();
+  renderDetections([]);
   setPumpState(false);
   stopCamera();
   updateReport();
@@ -558,6 +570,7 @@ function bindEvents() {
 
     feedOverlay.classList.toggle("hidden", !state.paused);
     if (state.paused) {
+      renderDetections([]);
       feedOverlay.innerHTML = `<img src="logo1.png" alt="VARDAN" /><p>Detection paused. Resume when the field is back in view.</p>`;
       setPumpState(false);
       addHistoryEvent("Detection Paused", "Operator paused real-time scan");
