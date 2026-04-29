@@ -79,23 +79,40 @@
 
         <section class="stats-card">
           <div class="mini-stat">
-            <span class="mini-icon">WD</span>
-            <div>
-              <span>Weeds Detected</span>
+            <span class="mini-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="stat-icon">
+                <path d="M11.8 20V9.2"></path>
+                <path d="M11.8 11.6c-1.5-2.8-4-4.3-7.1-4.4.3 3 2 5.5 5.1 6.3"></path>
+                <path d="M12 10.2c1.7-3.1 4.5-4.9 8-5 0 3.4-1.7 6.1-5 7.3"></path>
+              </svg>
+            </span>
+            <div class="mini-copy">
+              <span class="mini-label">Weeds Detected</span>
               <strong id="weedCount">0</strong>
             </div>
           </div>
           <div class="mini-stat">
-            <span class="mini-icon">PM</span>
-            <div>
-              <span>Pumps Triggered</span>
+            <span class="mini-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="stat-icon">
+                <path d="M12 5.3c1.9 2.2 3.8 4.7 3.8 7a3.8 3.8 0 1 1-7.6 0c0-2.3 1.9-4.8 3.8-7Z"></path>
+                <path d="M16.5 7.7h1.7a2 2 0 0 1 2 2v2.7a2 2 0 0 1-2 2H17"></path>
+                <path d="M7 14.4H5.6a1.8 1.8 0 0 1-1.8-1.8v-2a1.8 1.8 0 0 1 1.8-1.8H7"></path>
+              </svg>
+            </span>
+            <div class="mini-copy">
+              <span class="mini-label">Pumps Triggered</span>
               <strong id="pumpCount">0</strong>
             </div>
           </div>
           <div class="mini-stat">
-            <span class="mini-icon">UP</span>
-            <div>
-              <span>Uptime</span>
+            <span class="mini-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="stat-icon">
+                <circle cx="12" cy="12" r="8.5"></circle>
+                <path d="M12 7.5V12l3 2"></path>
+              </svg>
+            </span>
+            <div class="mini-copy">
+              <span class="mini-label">Uptime</span>
               <strong id="uptimeValue">00:00:00</strong>
             </div>
           </div>
